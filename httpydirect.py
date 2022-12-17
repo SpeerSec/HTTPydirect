@@ -5,6 +5,7 @@
 import argparse
 import http.server
 import socketserver
+import sys
 
 class RedirectHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
