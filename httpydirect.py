@@ -5,6 +5,7 @@
 import argparse
 import http.server
 import socketserver
+import signal
 import sys
 
 class RedirectHandler(http.server.BaseHTTPRequestHandler):
@@ -26,8 +27,17 @@ if len(sys.argv) == 1:
     parser.print_help()
     sys.exit()
 
+# Set up a signal handler to exit cleanly when CTRL+C is pressed
+def signal_handler(sig, frame):
+    print("Exiting...")
+    sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
+
 # Create the server and run it
 with socketserver.TCPServer((args.ip, args.port), RedirectHandler) as httpd:
     httpd.target_url = args.url
     print("Redirecting incoming requests to {}".format(args.url))
-    httpd.serve_forever()
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
